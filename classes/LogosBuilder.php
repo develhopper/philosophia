@@ -9,37 +9,22 @@ use yii\base\BootstrapInterface;
 class LogosBuilder implements BootstrapInterface{
     
     private $logos;
-    private $params = [];
+    private $commander;
+
     public function bootstrap($app){
+        $this->commander = new LogosCommander();
         Yii::$container->set(Logos::class, function($container, $params, $config){
             $this->logos = Logos::getInstance();
             $this->register();
-            $this->logos->beforeRun([$this, 'beforeRun']);
+            $this->logos->beforeRun([$this->commander, 'beforeRun']);
             return $this->logos;
         });
     }
 
     public function register(){
-        $this->logos->register('test', [$this, 'test']);
-        $this->logos->register('ls', [$this, 'ls']);
-        $this->logos->register('cd {dir}', [$this, 'cd']);
-    }
-
-    public function beforeRun(){
-        $this->params['pwd'] = $pwd = Yii::$app->request->post('pwd') ?? '/';
-    }
-
-    public function test(){
-        return [
-            'message' => 'succeed'
-        ];
-    }
-
-    public function ls(){
-
-    }
-
-    public function cd($input){
-        return $this->params['pwd'] . $input;
+        $this->logos->register('test', [$this->commander, 'test']);
+        $this->logos->register('ls', [$this->commander, 'ls']);
+        $this->logos->register('cd {dir}', [$this->commander, 'cd']);
+        $this->logos->register('login -u {username}', [$this->commander , 'login']);
     }
 }
