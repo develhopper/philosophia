@@ -21,7 +21,7 @@ class m210911_060047_create_categories_table extends Migration
 
         $this->addForeignKey('category_user_fk', 'category', 'user_id', 'user', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('category_parent_fk', 'category', 'parent_id', 'category', 'id', 'CASCADE', 'CASCADE');
-
+        $this->createIndex('category_uniq', 'category', ['name', 'parent_id']);
     }
 
     /**

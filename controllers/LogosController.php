@@ -14,7 +14,7 @@ class LogosController extends Controller{
         
         $result = $logos->run($command);
         
-        if(!$command || !$result)
+        if(!$command || $result === -1)
             throw new NotFoundHttpException('command not found');
 
         return $result;
