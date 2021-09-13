@@ -16,7 +16,14 @@ use yii\web\UnauthorizedHttpException;
 class LogosCommander{
     private $params = [];
     private $required_auth = [
-        'write','mkdir', 'rm', 'rmdir', 'notepad', 'passwd'
+        'auth' =>['write','mkdir', 'rm', 'rmdir', 'notepad', 'passwd'],
+        'can' =>[
+            'create_post' => ['notepad', 'write'],
+            'create_category' => ['mkdir'],
+            'remove_category' => ['rmdir'],
+            'assign_user_roles' => ['usermod', 'list_roles', 'list_permissions'],
+            'remove_post' => ['rm']
+        ]
     ];
     
     private function post($key){
@@ -42,9 +49,19 @@ class LogosCommander{
     public function beforeRun($closure){
         $this->params['pwd'] = $this->post('pwd') ?? '/';
         $this->params['cmd'] = $closure[1];
-        if(in_array($closure[1], $this->required_auth)){
+        if(in_array($closure[1], $this->required_auth['auth'])){
             if(!$this->auth()){
                 throw new UnauthorizedHttpException('Unauthorized action');
+            }
+        }
+
+        foreach($this->required_auth['can'] as $permission=>$actions){
+            if(!$this->auth()){
+                throw new UnauthorizedHttpException('Unauthorized action');
+            }
+            if(in_array($closure[1], $actions)){
+                if(!Yii::$app->user->can($permission))
+                    throw new UnauthorizedHttpException('Unauthorized action');
             }
         }
     }

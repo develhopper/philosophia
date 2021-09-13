@@ -19,6 +19,13 @@
                 <li><span>ls</span> : get list of categories and posts in current category</li>
                 <li><span>cd {category}</span> : change current category to {name}</li>
                 <li><span>login -u {username}</span> : login using {username}</li>
+                <li><span>logout</span> : logout</li>
+                <li><span>list roles</span> : list system roles</li>
+                <li><span>list permissions</span> : list system permissions</li>
+                <li><span>usermod -ar {role} {username}</span> : assign {role} to {username}</li>
+                <li><span>usermod -ap {role} {username}</span> : assign {permission} to {username}</li>
+                <li><span>usermod -dr {role} {username}</span> : revoke {role} for {username}</li>
+                <li><span>usermod -dp {role} {username}</span> : revoke {permission} for {username}</li>
                 <li><span>mkdir {category}</span> : create new category</li>
                 <li><span>rmdir {category}</span> : remove category</li>
                 <li><span>rm {post}</span> : remove post</li>
