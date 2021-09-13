@@ -1,0 +1,194 @@
+*{
+    box-sizing:border-box;
+}
+body{
+    background-image: url('../images/background.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.terminal{
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:600px;
+    height:400px;
+    background:rgba(0,0,0,0.8);
+    margin-top:-200px;
+    margin-left:-300px;
+    color:white;
+    overflow:hidden;
+    box-shadow:2px 3px 20px black;
+    z-index: 1;
+    display: flex;
+    flex-flow: column;
+}
+
+.titlebar{
+    background: white;
+    color:black;
+    flex: 0 1 auto;
+}
+
+.prompt{
+    height:100%;
+    overflow-y: scroll;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.red{
+    color:red;
+}
+
+.list{
+    padding:0;
+    margin-bottom:3px;
+}
+
+.list li{
+    display:inline-flex;
+    margin:5px;
+}
+
+.category{
+    color:#0277BD;
+}
+
+.post{
+    color:#CFD8DC;
+}
+
+.editor{
+    background-color: white;
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:800px;
+    height:600px;
+    margin-top:-300px;
+    margin-left:-400px;
+    overflow:hidden;
+    box-shadow:2px 3px 20px black;
+    z-index:2;
+}
+
+.editor.flex{
+    display:flex;
+    flex-flow:column;
+}
+
+.editor.titlebar{
+    flex:0 1 auto;
+    padding: 0;
+}
+
+#title{
+    padding-left:0;
+    padding-right:0;
+    flex: 0 1 auto;
+}
+.editor .body{
+    flex: 1 1 auto;
+    padding:0;
+    margin:0;
+    height:100%;
+}
+
+.editor form{
+    display:flex;
+    flex-flow:column;
+    padding: 0;
+}
+
+#body{
+    padding-left:0;
+    padding-right:0;
+    resize:none;
+    height:100%;
+    flex:1 1 auto;
+}
+
+.titlebar span{
+    width:auto;
+}
+.titlebar .row{
+    padding:0;
+    margin:0;
+}
+.titlebar .btn{
+    padding: 0;
+}
+
+.ml-auto{
+    margin-left:auto;
+}
+
+.la-window-close{
+    color:red;
+}
+
+.la-save{
+    color:teal;
+}
+
+.info{
+    position:fixed;
+    left:100%;
+    margin-left:-35px;
+    margin-top:10px;
+    z-index: 3;
+}
+
+.info:hover .info-body{
+    display:block;
+}
+
+.info .icon{
+    background:white;
+    font-size:1.5em;
+    border-radius: 100%;
+    box-shadow: 2px 3px 8px #EF5350;
+    cursor:pointer;
+    text-align: center;
+    display: flex;
+    color:#0288D1
+}
+
+.info .info-body{
+    display:none;
+    background:white;
+    margin-left: -290px;
+    border-radius:5px 0 5px 5px;
+    width:300px;
+    box-shadow: 3px 4px 7px black;
+    padding:3px
+}
+
+.info-body ul{
+    list-style-type: lower-roman;
+    color:#263238;
+}
+
+.info-body ul span{
+    color:#F44336;
+}
+
+.ck-editor__main{
+    height: 440px;
+    overflow-y: scroll;
+}
+.ck.ck-editor{
+    margin: 5px;
+}
+
+.editor .form-control{
+    margin: 5px;
+}
+
+@keyframes blink{
+0%{opacity: 0;}
+50%{opacity: .5;}
+100%{opacity: 1;}
+}
