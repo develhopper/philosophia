@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4cc956c47eb5fa6c0103c471bfaf4d97",
+    "content-hash": "da85d1f81372d18243572e90943d643b",
     "packages": [
         {
             "name": "bower-asset/inputmask",
@@ -147,11 +147,17 @@
         },
         {
             "name": "develhopper/logos",
-            "version": "dev-master",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/develhopper/Logos.git",
+                "reference": "af8f7a3f89e1ee76814e2494ebd616f2484e1bc2"
+            },
             "dist": {
-                "type": "path",
-                "url": "../Logos",
-                "reference": "e38fd1eb9f309698a39401c4fb3732088e065187"
+                "type": "zip",
+                "url": "https://api.github.com/repos/develhopper/Logos/zipball/af8f7a3f89e1ee76814e2494ebd616f2484e1bc2",
+                "reference": "af8f7a3f89e1ee76814e2494ebd616f2484e1bc2",
+                "shasum": ""
             },
             "type": "library",
             "autoload": {
@@ -159,8 +165,9 @@
                     "develhopper\\Logos\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL"
+                "GPL-3.0+"
             ],
             "authors": [
                 {
@@ -169,9 +176,11 @@
                 }
             ],
             "description": "Logos is web shell Kernel",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/develhopper/Logos/issues",
+                "source": "https://github.com/develhopper/Logos/tree/1.0"
+            },
+            "time": "2021-09-13T11:25:21+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -5495,9 +5504,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "develhopper/logos": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
