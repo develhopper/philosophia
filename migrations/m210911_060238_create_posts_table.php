@@ -22,6 +22,8 @@ class m210911_060238_create_posts_table extends Migration
 
         $this->addForeignKey('post_user_fk', 'post', 'user_id', 'user', 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('post_category_fk', 'post', 'category_id', 'category', 'id', 'CASCADE', 'CASCADE');
+        
+        $this->createIndex('post_uniq', 'post', ['title', 'category_id'],true);
     }
 
     /**
