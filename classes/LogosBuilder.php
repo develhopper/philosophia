@@ -28,11 +28,13 @@ class LogosBuilder implements BootstrapInterface{
         $this->logos->register('cd {dir}', [$this->commander, 'cd']);
         $this->logos->register('login -u {username}', [$this->commander , 'login']);
         $this->logos->register('logout', [$this->commander, 'logout']);
+        $this->logos->register('register -u {username}', [$this->commander, 'register']);
         $this->logos->register('mkdir {dir}', [$this->commander, 'mkdir']);
         $this->logos->register('rmdir {dir}', [$this->commander, 'rmdir']);
         $this->logos->register('rm {file}', [$this->commander, 'rm']);
         $this->logos->register('write', [$this->commander, 'write']);
         $this->logos->register('notepad {post}', [$this->commander, 'notepad']);
         $this->logos->register('view {post}', [$this->commander, 'view']);
+        $this->logos->register('passwd', [$this->commander, 'passwd']);
     }
 }

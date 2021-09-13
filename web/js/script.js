@@ -77,6 +77,12 @@ $(function(){
             case 'login':
                 password = window.prompt("Enter your password");
                 return ajax(command, {password:password});
+            case 'passwd':
+                password = window.prompt("Enter your new password");
+                return ajax(command, {password:password});
+            case 'register':
+                password = window.prompt("Enter your password");
+                return ajax(command, {password:password});
             default:
                 return ajax(command);
         }
@@ -120,10 +126,11 @@ $(function(){
                 generate_listing(result);
                 break;
             case 'login':
-                $.cookie('username',result.username ?? "guest");
+                if(result.username)
+                    $.cookie('username',result.username, {expires:30});
                 break;
             case 'logout':
-                $.cookie('username', null);
+                $.removeCookie('username');
                 break;
             case 'notepad':
                 notepad({

@@ -5,17 +5,19 @@ namespace app\classes;
 use app\models\Category;
 use app\models\LoginForm;
 use app\models\Post;
+use app\models\User;
 use PDO;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
+use yii\web\ConflictHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\UnauthorizedHttpException;
 
 class LogosCommander{
     private $params = [];
     private $required_auth = [
-        'write', 'mkdir', 'rm', 'rmdir', 'notepad'
+        'write', 'mkdir', 'rm', 'rmdir', 'notepad', 'passwd'
     ];
     
     private function post($key){
@@ -106,6 +108,24 @@ class LogosCommander{
         throw new UnauthorizedHttpException('username or password is incorrect');
     }
 
+    public function register($username){
+        $user = User::find()->where(['username' => $username])->one();
+        $password = $this->post('password');
+
+        if(!$password)
+            throw new BadRequestHttpException('Password can not be empty');
+
+        if($user)
+            throw new ConflictHttpException('Username is taken');
+
+        $user = new User();
+        $user->username = $username;
+        $user->password = Yii::$app->security->generatePasswordHash($password);
+
+        if($user->save())
+            return ['message' => 'Registered'];
+    }
+
     public function mkdir($name){
         $parent_id = $this->getCurrent();
         
@@ -192,5 +212,16 @@ class LogosCommander{
             throw new NotFoundHttpException('Post not found');
 
         return $post;
+    }
+
+    public function passwd(){
+        $password = $this->post('password');
+        if(!$password)
+            throw new BadRequestHttpException('Password can not be empty');
+        $user = $this->auth();
+        $user->password = Yii::$app->security->generatePasswordHash($password);
+        if($user->save()){
+            return ['message' => 'password has been changed'];
+        }
     }
 }
