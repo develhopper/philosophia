@@ -6,7 +6,6 @@ use app\models\Category;
 use app\models\LoginForm;
 use app\models\Post;
 use app\models\User;
-use PDO;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;

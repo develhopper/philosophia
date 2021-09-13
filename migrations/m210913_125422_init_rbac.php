@@ -31,6 +31,7 @@ class m210913_125422_init_rbac extends Migration
 
         $permissions = [];
         $roles = [];
+
         foreach($rules as $role_name=>$role_permissions){
             $role = $auth->createRole($role_name);
             $auth->add($role);
@@ -44,6 +45,17 @@ class m210913_125422_init_rbac extends Migration
                 $auth->addChild($role, $permissions[$name]);
             }
         }
+
+        $rule = new \app\rbac\AuthorRule;
+        $auth->add($rule);
+
+        $updateOwnPost = $this->createPermission($auth, 'update_own_post', 'Update own post');
+        $updateOwnPost->ruleName = $rule->name;
+
+        $auth->add($updateOwnPost);
+
+        $auth->addChild($updateOwnPost, $permissions['update_post']);
+        $auth->addChild($roles['author'], $updateOwnPost);
 
         $user = User::findOne(1);
         if(!$user){
