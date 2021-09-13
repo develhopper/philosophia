@@ -17,6 +17,7 @@ class LogosBuilder implements BootstrapInterface{
             $this->logos = Logos::getInstance();
             $this->register();
             $this->logos->beforeRun([$this->commander, 'beforeRun']);
+            $this->logos->afterRun([$this->commander, 'afterRun']);
             return $this->logos;
         });
     }
@@ -31,5 +32,7 @@ class LogosBuilder implements BootstrapInterface{
         $this->logos->register('rmdir {dir}', [$this->commander, 'rmdir']);
         $this->logos->register('rm {file}', [$this->commander, 'rm']);
         $this->logos->register('write', [$this->commander, 'write']);
+        $this->logos->register('notepad {post}', [$this->commander, 'notepad']);
+        $this->logos->register('view {post}', [$this->commander, 'view']);
     }
 }

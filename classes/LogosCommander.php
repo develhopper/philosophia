@@ -7,6 +7,7 @@ use app\models\LoginForm;
 use app\models\Post;
 use PDO;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\UnauthorizedHttpException;
@@ -14,7 +15,7 @@ use yii\web\UnauthorizedHttpException;
 class LogosCommander{
     private $params = [];
     private $required_auth = [
-        'write', 'mkdir', 'rm', 'rmdir'
+        'write', 'mkdir', 'rm', 'rmdir', 'notepad'
     ];
     
     private function post($key){
@@ -39,11 +40,22 @@ class LogosCommander{
 
     public function beforeRun($closure){
         $this->params['pwd'] = $this->post('pwd') ?? '/';
+        $this->params['cmd'] = $closure[1];
         if(in_array($closure[1], $this->required_auth)){
             if(!$this->auth()){
                 throw new UnauthorizedHttpException('Unauthorized action');
             }
         }
+    }
+
+    public function afterRun($result){
+        $result = ArrayHelper::toArray($result);
+        $result['_command'] = $this->params['cmd'];
+        $result['_pwd'] = $this->params['pwd'];
+        if($this->auth()){
+            $result['_username'] = $this->auth()->username;
+        }
+        return $result;
     }
 
     public function test(){
@@ -66,14 +78,17 @@ class LogosCommander{
     }
 
     public function cd($category){
-        if($category == "/")
+        if($category == "/"){
+            $this->params['pwd'] = '/';
             return ['pwd' => $category];
+        }
 
         $category = Category::find()
         ->where(['parent_id' => $this->getCurrent()])
         ->andWhere(['name' => $category])->one();
         if($category){
-            return ['pwd' => $this->params['pwd'] . $category->name];
+            $this->params['pwd'] = $this->params['pwd'] . $category->name;
+            return [];
         }
 
         throw new NotFoundHttpException('Category not found');
@@ -104,14 +119,25 @@ class LogosCommander{
     }
 
     public function write(){
-        $post = new Post();
-        $post->title = $this->post('title');
-        $post->body = $this->post('body');
-        $post->category_id = $this->getCurrent();
-        $post->user_id = $this->auth()->id;
+        $id = $this->post('id');
+        $update = $this->post('update');
+        
+        if($id && $update){
+            $post = Post::findOne($id);
+            if($post){
+                $post->title = $this->post('title');
+                $post->body = $this->post('body');
+            }
+        }else{
+            $post = new Post();
+            $post->title = $this->post('title');
+            $post->body = $this->post('body');
+            $post->category_id = $this->getCurrent();
+            $post->user_id = $this->auth()->id;
+        }
 
         if($post->save()){
-            return $post;
+            return ['message' => 'saved'];
         }
 
         throw new BadRequestHttpException('cant create post');
@@ -144,5 +170,27 @@ class LogosCommander{
 
         $post->delete();
         return ['message' => 'removed'];
+    }
+
+    public function notepad($post){
+        $post = Post::find()
+        ->where(['category_id' => $this->getCurrent()])
+        ->andWhere(['title' => $post])->one();
+
+        if($post)
+            return $post;
+        
+        return ['title' => '', 'body' => ''];
+    }
+
+    public function view($post){
+        $post = Post::find()
+        ->where(['category_id' => $this->getCurrent()])
+        ->andWhere(['title' => $post])->one();
+
+        if(!$post)
+            throw new NotFoundHttpException('Post not found');
+
+        return $post;
     }
 }
