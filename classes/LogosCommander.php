@@ -16,7 +16,7 @@ use yii\web\UnauthorizedHttpException;
 class LogosCommander{
     private $params = [];
     private $required_auth = [
-        'write', 'mkdir', 'rm', 'rmdir', 'notepad', 'passwd'
+        'write','mkdir', 'rm', 'rmdir', 'notepad', 'passwd'
     ];
     
     private function post($key){
@@ -222,5 +222,58 @@ class LogosCommander{
         if($user->save()){
             return ['message' => 'password has been changed'];
         }
+    }
+
+    public function list_roles(){
+        $auth = Yii::$app->authManager;
+        
+        return ['list' => $auth->getRoles()];
+    }
+
+    public function list_permissions(){
+        $auth = Yii::$app->authManager;
+
+        return ['list' => $auth->getPermissions()];
+    }
+
+    public function usermod($option, $role, $username){
+        $user = User::find()->where(['username' => $username])->one();
+        $auth = Yii::$app->authManager;
+        if(!$user)
+            throw new NotFoundHttpException('User not found');
+        
+        if($option == "-ar"){
+            $role = $auth->getRole($role);
+            if(!$role)
+                throw new NotFoundHttpException('Role not found');
+            $auth->assign($role, $user->getId());
+            return ['message' => 'Role assigned to user'];
+        }
+        
+        if($option == "-ap"){
+            $permission = $auth->getPermission($role);
+            if(!$permission)
+                throw new NotFoundHttpException('Permission not found');
+            $auth->assign($permission, $user->getId());
+            return ['message' => 'Permission assigned to user'];
+        }
+
+        if($option == "-dr"){
+            $role = $auth->getRole($role);
+            if(!$role)
+                throw new NotFoundHttpException('Role not found');
+            $auth->revoke($role, $user->getId());
+            return ['message' => 'Role revoked'];
+        }
+
+        if($option == "-dp"){
+            $permission = $auth->getPermission($role);
+            if(!$permission)
+                throw new NotFoundHttpException('Permission not found');
+            $auth->assign($permission, $user->getId());
+            return ['message' => 'Permission revoked'];
+        }
+
+        throw new BadRequestHttpException('Invalid Options');
     }
 }

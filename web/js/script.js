@@ -161,6 +161,9 @@ $(function(){
                 if(result.message){
                     print(result.message, "green");
                 }
+                if(result.list){
+                    generate_listing(result);
+                }
         }
         if(!wait){
             prompt();
@@ -183,14 +186,24 @@ $(function(){
 
     function generate_listing(data){
         list = $('<ul class="list"></ul>');
-        data.categories.forEach(element => {
-            item = $('<li class="category"></li>').html(element.name+"/");
-            list.append(item);
-        });
-        data.posts.forEach(element => {
-            item = $('<li class="post"></li>').html(element.title);
-            list.append(item);
-        });
+        if(data.categories){
+            data.categories.forEach(element => {
+                item = $('<li class="category"></li>').html(element.name+"/");
+                list.append(item);
+            });
+        }
+        if(data.posts){
+            data.posts.forEach(element => {
+                item = $('<li class="post"></li>').html(element.title);
+                list.append(item);
+            });
+        }
+        if(data.list){
+            Object.keys(data.list).forEach(element => {
+                item = $('<li class="post"></li>').html(element);
+                list.append(item);
+            })
+        }
         $('.prompt').append(list);
     }
 
