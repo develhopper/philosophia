@@ -39,5 +39,7 @@ class LogosBuilder implements BootstrapInterface{
         $this->logos->register('list roles', [$this->commander, 'list_roles']);
         $this->logos->register('list permissions', [$this->commander, 'list_permissions']);
         $this->logos->register('usermod {option} {role} {username}', [$this->commander, 'usermod']);
+        $this->logos->register('whoami', [$this->commander, 'whoami']);
+        $this->logos->register('whois {username}', [$this->commander, 'whois']);
     }
 }

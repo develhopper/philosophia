@@ -51,17 +51,17 @@ class LogosCommander{
         $this->params['cmd'] = $closure[1];
         if(in_array($closure[1], $this->required_auth['auth'])){
             if(!$this->auth()){
-                throw new UnauthorizedHttpException('Unauthorized action');
+                throw new UnauthorizedHttpException('Unauthorized action 1');
             }
         }
 
         foreach($this->required_auth['can'] as $permission=>$actions){
-            if(!$this->auth()){
-                throw new UnauthorizedHttpException('Unauthorized action');
-            }
             if(in_array($closure[1], $actions)){
+                if(!$this->auth()){
+                    throw new UnauthorizedHttpException('Unauthorized action 12');
+                }
                 if(!Yii::$app->user->can($permission))
-                    throw new UnauthorizedHttpException('Unauthorized action');
+                    throw new UnauthorizedHttpException('Unauthorized action 3');
             }
         }
     }
@@ -292,5 +292,36 @@ class LogosCommander{
         }
 
         throw new BadRequestHttpException('Invalid Options');
+    }
+
+    public function whois($username){
+        $user = User::find()->where(['username' => $username])->one();
+        if(!$user)
+            throw new NotFoundHttpException('User not found');
+
+        $auth = Yii::$app->authManager;
+
+        $roles = array_keys($auth->getRolesByUser($user->id));
+        $permissions = array_keys($auth->getPermissionsByUser($user->id));
+        return ['data' =>[
+            'user' => $user->username,
+            'roles' => $roles,
+            'permissions' => $permissions
+        ]];
+    }
+
+    public function whoami(){
+        if($this->auth()){
+            $auth = Yii::$app->authManager;
+
+            $roles = array_keys($auth->getRolesByUser($this->auth()->getId()));
+            $permissions = array_keys($auth->getPermissionsByUser($this->auth()->getId()));
+            return ['data' =>[
+                'user' => $this->auth()->username,
+                'roles' => $roles,
+                'permissions' => $permissions
+            ]];
+        }
+        return ['data' => ['user' => 'MR. Nobody']];
     }
 }
