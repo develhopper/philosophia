@@ -51,17 +51,18 @@ class LogosCommander{
         $this->params['cmd'] = $closure[1];
         if(in_array($closure[1], $this->required_auth['auth'])){
             if(!$this->auth()){
-                throw new UnauthorizedHttpException('Unauthorized action 1');
+                throw new UnauthorizedHttpException('Unauthorized action');
             }
         }
 
         foreach($this->required_auth['can'] as $permission=>$actions){
             if(in_array($closure[1], $actions)){
                 if(!$this->auth()){
-                    throw new UnauthorizedHttpException('Unauthorized action 12');
+                    throw new UnauthorizedHttpException('Unauthorized action');
                 }
-                if(!Yii::$app->user->can($permission))
-                    throw new UnauthorizedHttpException('Unauthorized action 3');
+                if(!Yii::$app->user->can($permission)){
+                    throw new UnauthorizedHttpException('You dont have permission');
+                }
             }
         }
     }

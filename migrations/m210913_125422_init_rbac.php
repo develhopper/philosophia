@@ -24,7 +24,7 @@ class m210913_125422_init_rbac extends Migration
                 'remove_category' => 'remove a category',
                 'remove_post' => 'Remove a post',
                 'update_post' => 'Update a Post',
-                'assing_user_roles' => 'Change user permissions and roles',
+                'assign_user_roles' => 'Change user permissions and roles',
                 'create_post' => 'Create a Post'
             ]
         ];
