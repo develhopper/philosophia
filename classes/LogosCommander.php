@@ -290,7 +290,7 @@ class LogosCommander{
             $permission = $auth->getPermission($role);
             if(!$permission)
                 throw new NotFoundHttpException('Permission not found');
-            $auth->assign($permission, $user->getId());
+            $auth->revoke($permission, $user->getId());
             return ['message' => 'Permission revoked'];
         }
 
