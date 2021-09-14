@@ -106,7 +106,9 @@ class LogosCommander{
         ->where(['parent_id' => $this->getCurrent()])
         ->andWhere(['name' => $category])->one();
         if($category){
-            $this->params['pwd'] = $this->params['pwd'] . $category->name;
+            if($this->params['pwd'] == '/')
+                $this->params['pwd'] = '';
+            $this->params['pwd'] = $this->params['pwd']. '/' . $category->name;
             return [];
         }
 
