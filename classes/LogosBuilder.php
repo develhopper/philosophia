@@ -8,9 +8,28 @@ use yii\base\BootstrapInterface;
 
 class LogosBuilder implements BootstrapInterface{
     
+    /**
+     * Logos instance
+     *
+     * @var Logos
+     */
     private $logos;
+
+    /**
+     * Logos Commands registery
+     *
+     * @var LogosCommander
+     */
     private $commander;
 
+    /**
+     * bootstrap function
+     * 
+     * Initialize Logos and add it's instance to DI container
+     *
+     * @param $app
+     * @return void
+     */
     public function bootstrap($app){
         $this->commander = new LogosCommander();
         Yii::$container->set(Logos::class, function($container, $params, $config){
@@ -22,6 +41,11 @@ class LogosBuilder implements BootstrapInterface{
         });
     }
 
+    /**
+     * Register Logos Commands
+     *
+     * @return void
+     */
     public function register(){
         $this->logos->register('test', [$this->commander, 'test']);
         $this->logos->register('ls', [$this->commander, 'ls']);

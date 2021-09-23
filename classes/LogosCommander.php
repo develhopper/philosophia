@@ -10,11 +10,23 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\ConflictHttpException;
+use yii\web\IdentityInterface;
 use yii\web\NotFoundHttpException;
 use yii\web\UnauthorizedHttpException;
 
 class LogosCommander{
+    /**
+     * result parameters
+     *
+     * @var array
+     */
     private $params = [];
+
+    /**
+     * Array of methods that need authentication and authorization
+     *
+     * @var array
+     */
     private $required_auth = [
         'auth' =>['write','mkdir', 'rm', 'rmdir', 'notepad', 'passwd'],
         'can' =>[
@@ -26,14 +38,31 @@ class LogosCommander{
         ]
     ];
     
+    /**
+     * Shorthand of Yii::$app->request->post()
+     *
+     * @param mixed $key
+     * @return void
+     */
     private function post($key){
         return Yii::$app->request->post($key);
     }
 
+    /**
+     * Get identity of authenticated user
+     *
+     * @return IdentityInterface|User
+     */
     private function auth(){
         return Yii::$app->user->identity;
     }
 
+    /**
+     * Get Current Directory
+     *
+     * @return string|null
+     * @throws NotFoundHttpException if category not found 
+     */
     private function getCurrent(){
         $parents = explode('/',$this->params['pwd']);
         $parent = end($parents);
@@ -46,7 +75,15 @@ class LogosCommander{
         return null;
     }
 
-    public function beforeRun($closure){
+    /**
+     * Run before excution of command
+     *
+     * check authentocation and authorization of user before execution of command
+     * 
+     * @param callable $closure
+     * @return void
+     */
+    public function beforeRun(callable $closure){
         $this->params['pwd'] = $this->post('pwd') ?? '/';
         $this->params['cmd'] = $closure[1];
         if(in_array($closure[1], $this->required_auth['auth'])){
@@ -67,6 +104,14 @@ class LogosCommander{
         }
     }
 
+    /**
+     * Run after execution of command
+     * 
+     * modify result of executed command
+     *
+     * @param array $result
+     * @return mixed
+     */
     public function afterRun($result){
         $result = ArrayHelper::toArray($result);
         $result['_command'] = $this->params['cmd'];
@@ -77,12 +122,11 @@ class LogosCommander{
         return $result;
     }
 
-    public function test(){
-        return [
-            'message' => 'succeed'
-        ];
-    }
-
+    /**
+     * List of categories in current categories
+     *
+     * @return array
+     */
     public function ls(){
         $categories = Category::find()
         ->where(['parent_id' => $this->getCurrent()])->all();
@@ -96,6 +140,13 @@ class LogosCommander{
         ];
     }
 
+    /**
+     * Change current category
+     *
+     * @param string $category
+     * @return array
+     * @throws NotFoundHttpException if category not found
+     */
     public function cd($category){
         if($category == "/"){
             $this->params['pwd'] = '/';
@@ -115,6 +166,13 @@ class LogosCommander{
         throw new NotFoundHttpException('Category not found');
     }
 
+    /**
+     * Login user
+     *
+     * @param string $username
+     * @return IdentityInterface
+     * @throws UnauthorizedHttpException if username or password is incorrect
+     */
     public function login($username){
         $model = new LoginForm();
         $model->password = $this->post('password');
@@ -127,6 +185,14 @@ class LogosCommander{
         throw new UnauthorizedHttpException('username or password is incorrect');
     }
 
+    /**
+     * Register user
+     *
+     * @param string $username
+     * @return array
+     * @throws BadRequestHttpException if password is empty
+     * @throws ConflictHttpException if username is taken
+     */
     public function register($username){
         $user = User::find()->where(['username' => $username])->one();
         $password = $this->post('password');
@@ -145,6 +211,12 @@ class LogosCommander{
             return ['message' => 'Registered'];
     }
 
+    /**
+     * Create new category in current category
+     *
+     * @param string $name
+     * @return Category
+     */
     public function mkdir($name){
         $parent_id = $this->getCurrent();
         
@@ -157,6 +229,12 @@ class LogosCommander{
             return $category;
     }
 
+    /**
+     * Write Post
+     *
+     * @return array
+     * @throws BadRequestHttpException if can't create new post
+     */
     public function write(){
         $id = $this->post('id');
         $update = $this->post('update');
@@ -182,11 +260,23 @@ class LogosCommander{
         throw new BadRequestHttpException('cant create post');
     }
 
+    /**
+     * Logout user
+     *
+     * @return array
+     */
     public function logout(){
         Yii::$app->user->logout();
         return ['message' => 'logout'];
     }
 
+    /**
+     * Remove Category
+     *
+     * @param string $category
+     * @return array
+     * @throws NotFoundHttpException if category not found
+     */
     public function rmdir($category){
         $category = Category::find()
         ->where(['parent_id' => $this->getCurrent()])
@@ -199,6 +289,13 @@ class LogosCommander{
         return ['message' => 'removed'];
     }
 
+    /**
+     * Remove a Post
+     *
+     * @param string $post
+     * @return array
+     * @throws NotFoundHttpException if post not found
+     */
     public function rm($post){
         $post = Post::find()
         ->where(['category_id' => $this->getCurrent()])
@@ -211,6 +308,13 @@ class LogosCommander{
         return ['message' => 'removed'];
     }
 
+    /**
+     * This method will return the existing post title and body of editing
+     * otherwise will return empty title and body 
+     *
+     * @param string $post
+     * @return Post|array
+     */
     public function notepad($post){
         $post = Post::find()
         ->where(['category_id' => $this->getCurrent()])
@@ -222,6 +326,13 @@ class LogosCommander{
         return ['title' => '', 'body' => ''];
     }
 
+    /**
+     * Return exisiting post for viewing
+     *
+     * @param string $post
+     * @return Post
+     * @throws NotFoundHttpException if post not found
+     */
     public function view($post){
         $post = Post::find()
         ->where(['category_id' => $this->getCurrent()])
@@ -233,6 +344,12 @@ class LogosCommander{
         return $post;
     }
 
+    /**
+     * Change password
+     *
+     * @return void
+     * @throws BadRequestHttpException if password is empty
+     */
     public function passwd(){
         $password = $this->post('password');
         if(!$password)
@@ -244,18 +361,44 @@ class LogosCommander{
         }
     }
 
+    /**
+     * Get List of roles defined in system
+     *
+     * @return array
+     */
     public function list_roles(){
         $auth = Yii::$app->authManager;
         
         return ['list' => $auth->getRoles()];
     }
 
+    /**
+     * Get List of permissions defined in system
+     *
+     * @return array
+     */
     public function list_permissions(){
         $auth = Yii::$app->authManager;
 
         return ['list' => $auth->getPermissions()];
     }
 
+    /**
+     * Modify user role and permissions
+     *
+     * @param string $option
+     * Available Options
+     *  - \-ar: Assign role
+     *  - \-dr: delete role
+     *  - \-ap: assign permission
+     *  - \-dp delete permission
+     * 
+     * @param string $role
+     * @param string $username
+     * @return array
+     * @throws NotFoundHttpException if user, role or permission  not found
+     * @throws BadRequestHttpException if invalid option passed to command
+     */
     public function usermod($option, $role, $username){
         $user = User::find()->where(['username' => $username])->one();
         $auth = Yii::$app->authManager;
@@ -297,6 +440,13 @@ class LogosCommander{
         throw new BadRequestHttpException('Invalid Options');
     }
 
+    /**
+     * Get account information of given username
+     *
+     * @param string $username
+     * @return array
+     * @throws NotFoundHttpException if user not found
+     */
     public function whois($username){
         $user = User::find()->where(['username' => $username])->one();
         if(!$user)
@@ -313,6 +463,11 @@ class LogosCommander{
         ]];
     }
 
+    /**
+     * Get Current user account info
+     *
+     * @return array
+     */
     public function whoami(){
         if($this->auth()){
             $auth = Yii::$app->authManager;

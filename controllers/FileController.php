@@ -8,9 +8,16 @@ use yii\filters\AccessControl;
 use yii\rest\Controller;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\UploadedFile;
-
+/**
+ * FileController used for handling upload requests
+ */
 class FileController extends Controller{
     
+    /**
+     * allow only authenticated users
+     *
+     * @return array
+     */
     public function behaviors()
     {
         return [
@@ -28,6 +35,12 @@ class FileController extends Controller{
         ];
     }
 
+    /**
+     * upload action
+     *
+     * @return array
+     * @throws MethodNotAllowedHttpException if method not allowed
+     */
     public function actionUpload(){
         $model = new UploadForm();
         
