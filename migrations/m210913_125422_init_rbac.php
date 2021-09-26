@@ -60,7 +60,7 @@ class m210913_125422_init_rbac extends Migration
         $user = User::findOne(1);
         if(!$user){
             $user = new User();
-            $user->username = 'alireza';
+            $user->username = 'root';
             $user->password = Yii::$app->security->generatePasswordHash('password');
             $user->save();
         }

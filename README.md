@@ -15,6 +15,10 @@ run application migrations
 ```
 php yii migrate
 ```
+## Default login credentials
+
+username: root
+password: password
 
 ## Review
 
